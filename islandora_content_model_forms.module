@@ -16,7 +16,7 @@ define("PERM_ADMIN_FORM_ASSOCIATION", 'Admin Form Associations');
 
 /**
  * Implementation of Hook Menu.
- * 
+ *
  * @return array
  */
 function islandora_content_model_forms_menu() {
@@ -72,7 +72,7 @@ function islandora_content_model_forms_menu() {
 
 /**
  * Implements hook_perm. Register permissions.
- * 
+ *
  * @return array
  */
 function islandora_content_model_forms_perm() {
@@ -127,8 +127,8 @@ function islandora_content_model_forms_get_transform_name($path) {
 
 /**
  * Remove the association identified by $id.
- * 
- * @param int $id 
+ *
+ * @param int $id
  */
 function islandora_content_model_forms_remove($id) {
   db_query("DELETE FROM {islandora_content_model_forms} WHERE id = '%d'", (int) $id);
@@ -138,8 +138,8 @@ function islandora_content_model_forms_remove($id) {
 
 /**
  * Render the form for adding new associations.
- * 
- * @param array $form_state 
+ *
+ * @param array $form_state
  * @return array
  */
 function islandora_content_model_forms_list_form(array &$form_state) {
@@ -220,7 +220,7 @@ function islandora_content_model_forms_list_form(array &$form_state) {
 /**
  *
  * @param array $form
- * @param array $form_state 
+ * @param array $form_state
  */
 function islandora_content_model_forms_list_form_validate(array $form, array &$form_state) {
   $content_model_pid = $form_state['values']['content_model'];
@@ -233,8 +233,8 @@ function islandora_content_model_forms_list_form_validate(array $form, array &$f
 
 /**
  * Add a new association.
- * 
- * @param array $form_state 
+ *
+ * @param array $form_state
  */
 function islandora_content_model_forms_list_form_submit(array $form, array &$form_state) {
   $object = new stdClass();
@@ -315,7 +315,7 @@ function islandora_content_model_forms_parse_query($content) {
 
 /**
  * Gets a map of form names suitable for use as select #options.
- * 
+ *
  * @return array
  */
 function islandora_content_model_forms_get_form_names() {
@@ -354,7 +354,7 @@ function islandora_content_model_forms_islandora_content_model_forms_get_transfo
 
 /**
  * Autocomplete the content model name..
- * 
+ *
  * @param string $string
  * @return string
  */
@@ -373,7 +373,7 @@ function islandora_content_model_forms_autocomplete($string) {
 /**
  *
  * @param string $content_model
- * @return array 
+ * @return array
  */
 function islandora_content_model_get_form_names($content_model) {
   module_load_include('inc', 'xml_form_builder', 'XMLFormDatabase');
@@ -390,7 +390,7 @@ function islandora_content_model_get_form_names($content_model) {
 /**
  *
  * @param string $content_model
- * @return string 
+ * @return string
  */
 function islandora_content_model_get_form_names_ahah($content_model) {
   $list = islandora_content_model_get_form_names($content_model);
@@ -400,7 +400,7 @@ function islandora_content_model_get_form_names_ahah($content_model) {
 /**
  *
  * @param string $content_model_pid
- * @param string $form_name 
+ * @param string $form_name
  */
 function islandora_content_model_association_exists($content_model_pid, $form_name) {
   $result = db_query("SELECT id FROM {islandora_content_model_forms} where content_model = '%s' AND form_name = '%s'", $content_model_pid, $form_name);
@@ -416,7 +416,7 @@ function islandora_content_model_association_exists($content_model_pid, $form_na
  *
  * @param string $content_model_pid
  * @param string $form_name
- * @return string 
+ * @return string
  */
 function islandora_content_model_get_dsid($content_model_pid, $form_name) {
   $result = db_query("SELECT dsid FROM {islandora_content_model_forms} where content_model = '%s' AND form_name = '%s'", $content_model_pid, $form_name);
@@ -432,7 +432,7 @@ function islandora_content_model_get_dsid($content_model_pid, $form_name) {
  *
  * @param string $content_model_pid
  * @param string $form_name
- * @return string 
+ * @return string
  */
 function islandora_content_model_get_title_field($content_model_pid, $form_name) {
   $result = db_query("SELECT title_field FROM {islandora_content_model_forms} where content_model = '%s' AND form_name = '%s'", $content_model_pid, $form_name);
@@ -448,7 +448,7 @@ function islandora_content_model_get_title_field($content_model_pid, $form_name)
  *
  * @param type $content_model_pid
  * @param type $form_name
- * @return type 
+ * @return type
  */
 function islandora_content_model_get_template($content_model_pid, $form_name) {
   $result = db_query("SELECT template FROM {islandora_content_model_forms} where content_model = '%s' AND form_name = '%s'", $content_model_pid, $form_name);
@@ -464,27 +464,27 @@ function islandora_content_model_get_template($content_model_pid, $form_name) {
  *
  * @param string $content_model_pid
  * @param string $form_name
- * @return string 
+ * @return string
  */
 function islandora_content_model_get_transform($content_model_pid, $form_name) {
   $result = db_query("SELECT transform FROM {islandora_content_model_forms} where content_model = '%s' AND form_name = '%s'", $content_model_pid, $form_name);
   while ($data = db_fetch_object($result)) {
     if (isset($data->transform)) {
-      $xsl_file = "./{$data->transform}"; 
-    
+      $xsl_file = "./{$data->transform}";
+
       $old_transform_path = drupal_get_path('module', 'islandora_content_model_forms') . "/transforms/{$data->transform}";
       if (!file_exists($xsl_file)) {
         $xsl_file = "./$old_transform_path";
-        
+
         if (file_exists($xsl_file)) {
-          watchdog('islandora_content_model_forms', 'Found the transform "@transform" in the legacy location. Transforms ' . 
+          watchdog('islandora_content_model_forms', 'Found the transform "@transform" in the legacy location. Transforms ' .
             'should be specified by a path relative to the server\'s document root.', array(
             '@transform' => $data->transform,
             '@old_dir' => $old_transform_path,
           ), WATCHDOG_WARNING);
         }
         else {
-          watchdog('islandora_content_model_forms', 'The XSLT transform to DC cannot be located as either "@transform"' . 
+          watchdog('islandora_content_model_forms', 'The XSLT transform to DC cannot be located as either "@transform"' .
             ' or "@old_dir"!.', array(
             '@transform' => $data->transform,
             '@old_dir' => $old_transform_path,
@@ -500,7 +500,7 @@ function islandora_content_model_get_transform($content_model_pid, $form_name) {
 
 /**
  *
- * @param string $form_name 
+ * @param string $form_name
  * @return array
  */
 function islandora_content_model_forms_get_title_options($form_name) {
@@ -538,7 +538,7 @@ function islandora_content_model_forms_get_title_options($form_name) {
 }
 
 /**
- * 
+ *
  */
 function islandora_content_model_forms_ahah() {
   $form_build_id = $_REQUEST['form_build_id'];
