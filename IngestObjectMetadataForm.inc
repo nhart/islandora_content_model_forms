@@ -36,7 +36,7 @@ class IngestObjectMetadataForm {
       }
     }
 
-    //Add cmodels to programatically include...
+    // Add cmodels to programatically include...
     if ($CMs = $form_state['storage']['content_model']) {
       $CMs = (array) $CMs;
       module_load_include('inc', 'fedora_repository', 'ContentModel');
@@ -54,19 +54,21 @@ class IngestObjectMetadataForm {
   /**
    * Create the first page of the Ingest Object Metadata form.
    *
+   * @note
+   *   this code contains a temporary fix and should be replaced as soon as a more permananent solution is developed
+   * currently if a collection has more than one content model listed in the collection policy the user
+   * will only have access to the first form associated with the content type.
+   *
    * @param string $collection_pid
    * @param string $collection_label
    * @param array $form_state
    *
    * @return array
    */
-  // this code contains a temporary fix and should be replaced as soon as a more permananent solution is developed
-  // currently if a collection has more than one content model listed in the collection policy the user
-  // will only have access to the first form associated with the content type.
-
-
   public function createPageOne($collection_pid, $collection_label, array &$form_state) {
+
     dd('page1');
+
     $potential_models = $this->getPotentialContentModels($collection_pid, $form_state);
     unset($potential_models['islandora:collectionCModel/ISLANDORACM']);
     list($identifier, $name) = array_peek($potential_models);
@@ -83,19 +85,20 @@ class IngestObjectMetadataForm {
       }
       else {
         if (module_exists('islandora_collection_manager')) {
-          $message = t('Select the %manage tab to add content models or child collections to this collection', array('%manage' => 'Manage This Collection')); //XXX: Should get the value from the collection manager?
+          // XXX: Should get the value from the collection manager?
+          $message = t('Select the %manage tab to add content models or child collections to this collection', array('%manage' => 'Manage This Collection'));
         }
         else {
           $collection_link = l("Islandora Collection Manager", "https://wiki.duraspace.org/display/ISLANDORA6121/Collection+Manager");
           $message = t('This collection requires either one or more content models in its COLLECTION_POLICY, or one or more child collections.<br />
                       We strongly recommend enabling the !collection_link module for managing collection objects.', array('!collection_link' => $collection_link));
         }
-        $form['message'] = array(
-          '#type' => 'item',
-          '#value' => $message,
-        );
-        return $form;
       }
+      $form['message'] = array(
+        '#type' => 'item',
+        '#value' => $message,
+      );
+      return $form;
     }
 
     $form['indicator'] = array(
@@ -218,7 +221,7 @@ class IngestObjectMetadataForm {
     $form['submit'] = array(
       '#type' => 'submit',
       '#attributes' => array('class' => 'fedora_ingest_page_two_submit'),
-      '#submit' => array('fedora_repository_ingest_form_submit', 'islandora_workflow_ingest_submit'),
+      '#submit' => array('fedora_repository_ingest_form_submit'),
       '#value' => t('Submit'),
     );
     dsm($form, 'forrrr');
@@ -259,6 +262,9 @@ class IngestObjectMetadataForm {
    */
   public function submit(array &$form, array &$form_state) {
     global $base_url;
+    if ($form_state['clicked_button']['#id'] != 'edit-submit') {
+      return;
+    }
     if (isset($_FILES['files']['name']['file_upload']) && $_FILES['files']['name']['file_upload'] == 'text/xml') {
       $tmpDir = file_directory_path();
       if (!$file = file_save_upload('file_upload', NULL, $tmpDir)) {
@@ -302,6 +308,14 @@ class IngestObjectMetadataForm {
         $pid = Fedora_Item::get_next_PID_in_namespace($form_state['storage']['pid_namespace']);
       }
     }
+    $mods_nodelist = $document->getElementsByTagName('mods');
+    if ($mods_nodelist->length > 0) {
+      $mods_element = $mods_nodelist->item(0);
+      $identifier_element = $document->createElement('identifier', $pid);
+      $identifier_element->setAttribute('type', 'local');
+      $mods_element->appendChild($identifier_element);
+    }
+
 
     if (empty($relationship)) {
       if (!empty($form_state['storage']['parent_relation'])) {
