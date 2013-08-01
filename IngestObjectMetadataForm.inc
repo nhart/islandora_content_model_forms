@@ -221,10 +221,8 @@ class IngestObjectMetadataForm {
     $form['submit'] = array(
       '#type' => 'submit',
       '#attributes' => array('class' => 'fedora_ingest_page_two_submit'),
-      '#submit' => array('fedora_repository_ingest_form_submit'),
       '#value' => t('Submit'),
     );
-    dsm($form, 'forrrr');
     return $form;
   }
 
