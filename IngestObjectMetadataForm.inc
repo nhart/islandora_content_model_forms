@@ -66,9 +66,6 @@ class IngestObjectMetadataForm {
    * @return array
    */
   public function createPageOne($collection_pid, $collection_label, array &$form_state) {
-
-    dd('page1');
-
     $potential_models = $this->getPotentialContentModels($collection_pid, $form_state);
     unset($potential_models['islandora:collectionCModel/ISLANDORACM']);
     list($identifier, $name) = array_peek($potential_models);
@@ -164,7 +161,6 @@ class IngestObjectMetadataForm {
    * @return array
    */
   public function createPageTwo($collection_pid, $collection_label, array &$form_state) {
-    dd('page2');
     module_load_include('inc', 'fedora_repository', 'formClass');
     $path = drupal_get_path('module', 'islandora_content_model_forms');
     $content_model_pid = ContentModel::getPidFromIdentifier($form_state['values']['models']);
